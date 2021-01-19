@@ -14,6 +14,8 @@ $metadata['slug'] = '';
 
 $request = request($_SERVER['PATH_INFO']);
 
+echo 'Path : ' . $_SERVER['PATH_INFO'] . '<br/>';
+
 if ($request) {
     $metadata['title'] = $request['title'];
     $metadata['description'] = tease($request['content']);
