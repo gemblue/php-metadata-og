@@ -25,7 +25,7 @@ $metadata['slug'] = '';
 
 $request = request($_SERVER['REQUEST_URI']);
 
-error_log('URI : ' . $_SERVER['REQUEST_URI']);
+logs('URI : ' . $_SERVER['REQUEST_URI']);
 
 if ($request) {
     $metadata['content'] = $Parsedown->text($request['content']);
@@ -51,6 +51,19 @@ function request($slug) {
     curl_close($ch);
 
     return $result;
+}
+
+/**
+ * Log
+ */
+
+function logs($message) {
+
+    $myfile = fopen("log.txt", "w");
+    fwrite($myfile, $message . "\n");
+    fclose($myfile);
+
+    return true;
 }
 
 /**
