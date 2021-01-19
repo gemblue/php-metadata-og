@@ -36,6 +36,8 @@ function request($slug) {
     $result = json_decode($response, true);
     curl_close($ch);
 
+    echo 'Data :' . $response . '<br/>';
+
     return $result;
 }
 
