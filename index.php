@@ -17,6 +17,7 @@ $request = request($_SERVER['REQUEST_URI']);
 if ($request) {
     $metadata['title'] = $request['title'];
     $metadata['description'] = tease($request['content']);
+    $metadata['content'] = $request['content'];
     $metadata['image'] = $request['featured_image'];
     $metadata['slug'] = $request['slug'];
 }
@@ -35,7 +36,7 @@ function request($slug) {
     $response = curl_exec($ch);
     $result = json_decode($response, true);
     curl_close($ch);
-    
+
     return $result;
 }
 
@@ -95,6 +96,8 @@ function tease($body, $sentencesToDisplay = 2) {
     <meta property="robots" content="all">
 </head>
 <body>
-    Metadata OG Serve.
+    <h1><?php echo $metadata['title'];?></h1>
+
+    <p><?php echo $metadata['content'];?></p>
 </body>
 </html>
