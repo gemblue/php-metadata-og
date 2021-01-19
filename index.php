@@ -59,7 +59,7 @@ function request($slug) {
 
 function logs($message) {
 
-    $myfile = fopen("log.txt", "w");
+    $myfile = fopen("log.txt", "a");
     fwrite($myfile, $message . "\n");
     fclose($myfile);
 
