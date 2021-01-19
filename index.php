@@ -12,9 +12,9 @@ $metadata['description'] = 'Website tempat belajar pemrograman berbahasa Indones
 $metadata['image'] = 'https://cdn-cdpl.sgp1.digitaloceanspaces.com/assets/share.jpg';
 $metadata['slug'] = '';
 
-$request = request($_SERVER['PATH_INFO']);
+$request = request($_SERVER['REQUEST_URI']);
 
-echo 'Path : ' . $_SERVER['PATH_INFO'] . '<br/>';
+echo 'Path : ' . $_SERVER['REQUEST_URI'] . '<br/>';
 
 if ($request) {
     $metadata['title'] = $request['title'];
