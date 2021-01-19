@@ -14,8 +14,6 @@ $metadata['slug'] = '';
 
 $request = request($_SERVER['REQUEST_URI']);
 
-echo 'Path : ' . $_SERVER['REQUEST_URI'] . '<br/>';
-
 if ($request) {
     $metadata['title'] = $request['title'];
     $metadata['description'] = tease($request['content']);
@@ -37,9 +35,7 @@ function request($slug) {
     $response = curl_exec($ch);
     $result = json_decode($response, true);
     curl_close($ch);
-
-    echo 'Data :' . $response . '<br/>';
-
+    
     return $result;
 }
 
