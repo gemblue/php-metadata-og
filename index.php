@@ -25,6 +25,8 @@ $metadata['slug'] = '';
 
 $request = request($_SERVER['REQUEST_URI']);
 
+error_log('URI : ' . $_SERVER['REQUEST_URI']);
+
 if ($request) {
     $metadata['content'] = $Parsedown->text($request['content']);
     $metadata['title'] = $request['title'];
