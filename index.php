@@ -1,5 +1,16 @@
 <?php
 
+// Include bootstrap ...
+require 'bootstrap.php';
+
+use Parsedown;
+
+/**
+ * Dependency
+ */
+
+$Parsedown = new Parsedown();
+
 /**
  * Metadata Provider
  * 
@@ -15,9 +26,9 @@ $metadata['slug'] = '';
 $request = request($_SERVER['REQUEST_URI']);
 
 if ($request) {
+    $metadata['content'] = $Parsedown->text($request['content']);
     $metadata['title'] = $request['title'];
-    $metadata['description'] = tease($request['content']);
-    $metadata['content'] = $request['content'];
+    $metadata['description'] = tease($metadata['content']);
     $metadata['image'] = $request['featured_image'];
     $metadata['slug'] = $request['slug'];
 }
