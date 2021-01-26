@@ -1,35 +1,42 @@
 <?php
 
-// Include bootstrap ...
-require 'bootstrap.php';
-
-use Parsedown;
-
-/**
- * Dependency
- */
-
-$Parsedown = new Parsedown();
-
 /**
  * Metadata Provider
  * 
- * Small spaghetty code for serve metadata & og only.
+ * Small spaghetty code to serve metadata & og only from REST API
+ * 
+ * @author Gemblue
  */
+
+require 'bootstrap.php';
+
+/** Dependency instantiation */
+$Parsedown = new Parsedown();
 
 /** Define metadata & og */
 $metadata['title'] = 'Website Belajar Coding Bahasa Indonesia';
 $metadata['description'] = 'Website tempat belajar pemrograman berbahasa Indonesia lengkap dengan beragam format seperti kelas online, tutorial, training dan ebook. Siapa saja bisa belajar coding dan membuat program komputer. Platform belajar coding online yang dikemas secara interaktif dengan beragam media belajar.';
 $metadata['image'] = 'https://cdn-cdpl.sgp1.digitaloceanspaces.com/assets/share.jpg';
 $metadata['slug'] = '';
+$metadata['content'] = 'Website tempat belajar pemrograman berbahasa Indonesia lengkap dengan beragam format seperti kelas online, tutorial, training dan ebook. Siapa saja bisa belajar coding dan membuat program komputer. Platform belajar coding online yang dikemas secara interaktif dengan beragam media belajar.';
 
-$request = request($_SERVER['REQUEST_URI']);
+/** Get info from global vars */
+$domain = $_SERVER['SERVER_NAME'];
+$slug = $_SERVER['REQUEST_URI'];
 
-logs('URI : ' . $_SERVER['REQUEST_URI']);
+/** If domain is localhost, get from path instead of request uri */
+if ($domain == 'localhost') {
+    $slug = $_SERVER['PATH_INFO'];
+}
+
+logs('Slug : ' . $slug);
+
+/** Request data by slug */
+$request = request($slug);
 
 if ($request) {
-    $metadata['content'] = $Parsedown->text($request['content']);
     $metadata['title'] = $request['title'];
+    $metadata['content'] = $Parsedown->text($request['content']);
     $metadata['description'] = tease($metadata['content']);
     $metadata['image'] = $request['featured_image'];
     $metadata['slug'] = $request['slug'];
@@ -41,22 +48,48 @@ if ($request) {
  * Get API data from server.
  */
 function request($slug) {
+
+    $source = 'blog';
     $endpoint = 'https://api.codepolitan.com/v1/posts/detail' . $slug;
+
+    if (preg_match("/course/i", $slug)) {
+        $source = 'course';
+        $slug = str_replace('/course/intro', '', $slug);
+        $endpoint = 'https://api.codepolitan.com/course/detail' . $slug;
+    }
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $endpoint);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     $response = curl_exec($ch);
     $result = json_decode($response, true);
-    curl_close($ch);
 
-    return $result;
+    curl_close($ch);
+    
+    if ($source == 'course') {
+        return [
+            'title' => $result['course']['title'],
+            'content' => $result['course']['long_description'],
+            'description' => $result['course']['seo_description'],
+            'featured_image' => $result['course']['thumbnail'],
+            'slug' => $result['course']['slug']
+        ];
+    }
+
+    return [
+        'title' => $result['title'],
+        'content' => $result['content'],
+        'description' => $result['seo_description'],
+        'featured_image' => $result['featured_image'],
+        'slug' => $result['slug']
+    ];
 }
 
 /**
- * Log
+ * Logs
+ * 
+ * Save activity to file for debug purpose
  */
-
 function logs($message) {
 
     $myfile = fopen("log.txt", "a");
@@ -123,7 +156,6 @@ function tease($body, $sentencesToDisplay = 2) {
 </head>
 <body>
     <h1><?php echo $metadata['title'];?></h1>
-
     <p><?php echo $metadata['content'];?></p>
 </body>
 </html>
